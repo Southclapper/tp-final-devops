@@ -1,0 +1,13 @@
+- name: Install nginx 1.12
+  command: apt install nginx
+
+- name: Supprimer répertoire et contenu
+  file: path=/var/www/html state=absent
+
+- name: clone a private repository
+  git: >
+    repo=https://github.com/Southclapper/html-website-devops.git
+    dest=/var/www/html/
+
+- name: Start Nginx
+  service: name=nginx enabled=yes state=started
