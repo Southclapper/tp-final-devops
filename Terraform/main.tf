@@ -1,3 +1,4 @@
+
 provider "aws" {
   region     = var.region
 }
@@ -31,7 +32,22 @@ resource "aws_instance" "web" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
   key_name        = var.sshKey
- vpc_security_group_ids = [aws_security_group.allow_ssh_thibault.id]
+  vpc_security_group_ids = [aws_security_group.allow_ssh_thibault.id]
+
+ provisioner "local-exec" {
+     command = "rm -rf ansible/hosts"
+  }
+
+ provisioner "local-exec" {
+    command = <<EOT
+	echo "[server]" | tee -a ansible/hosts;
+	echo "${aws_instance.web[count.index].public_ip}" | tee -a ansible/hosts;
+    EOT
+  }
+ 
+# provisioner "local-exec" {
+#   command = "ansible-playbook --private-key=${var.sshKey} -i ansible/hosts ansible/playbook.yml"
+# }
 
   tags = {
     Name = var.instance_name
@@ -40,7 +56,7 @@ resource "aws_instance" "web" {
 
 # Create a Security Group
 resource "aws_security_group" "allow_ssh_thibault" {
-  name        = "allow_ssh_thibault"
+  name        = "allow_http_ssh_thibault"
   description = "Allow SSH for incomming traffic"
   
    ingress {
@@ -48,7 +64,7 @@ resource "aws_security_group" "allow_ssh_thibault" {
     from_port = var.http_port
     to_port   = var.http_port
     protocol  = "tcp"
-    cidr_blocks = ["1.2.3.4/32"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -70,3 +86,4 @@ resource "aws_security_group" "allow_ssh_thibault" {
     Name    = "var.security_group"
   }
 }
+

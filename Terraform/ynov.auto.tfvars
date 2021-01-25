@@ -1,3 +1,3 @@
-instance_name = "instance_jonathan"
+instance_name = "instance_serveless_conte"
 instance_number = 1
-create_instance = false
+create_instance = true

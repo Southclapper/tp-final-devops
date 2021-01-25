@@ -34,6 +34,10 @@ variable "instance_type" {
   default = "t2.micro"
 }
 
+variable "public_key" {
+  default = "tp_dev_ynov.pem"
+}
+
 variable "instance_number" {
   type = number
   description = "Instance number"
